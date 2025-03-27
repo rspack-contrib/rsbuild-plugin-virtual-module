@@ -21,7 +21,7 @@ test('should render page as expected', async ({ page }) => {
   const { server, urls } = await rsbuild.startDevServer();
 
   await page.goto(urls[0]);
-  expect(await page.evaluate('window.test')).toBe(1);
+  expect(await page.evaluate('window.test')).toMatchSnapshot();
 
   await server.close();
 });
@@ -29,16 +29,13 @@ test('should render page as expected', async ({ page }) => {
 test('should build succeed', async ({ page }) => {
   const rsbuild = await createRsbuild({
     cwd: __dirname,
-    rsbuildConfig: {
-      plugins: [pluginVirtualModule()],
-    },
   });
 
   await rsbuild.build();
   const { server, urls } = await rsbuild.preview();
 
   await page.goto(urls[0]);
-  expect(await page.evaluate('window.test')).toBe(1);
+  expect(await page.evaluate('window.test')).toMatchSnapshot();
 
   await server.close();
 });
