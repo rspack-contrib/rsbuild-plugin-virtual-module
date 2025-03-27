@@ -1,7 +1,10 @@
 {
   "name": "rsbuild-plugin-virtual-module",
-  "version": "0.0.0",
-  "repository": "https://github.com/rspack-contrib/rsbuild-plugin-template",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rspack-contrib/rsbuild-plugin-template.git"
+  },
   "license": "MIT",
   "type": "module",
   "exports": {
