@@ -7,9 +7,14 @@ export default defineConfig({
   plugins: [
     pluginVirtualModule({
       virtualModules: {
-        'virtual-json-list': async ({ addDependency }) => {
+        'virtual-json-list': async ({
+          addDependency,
+          addContextDependency,
+        }) => {
           const jsonFolderPath = join(__dirname, 'json');
           const ls = await readdir(jsonFolderPath);
+          addContextDependency(jsonFolderPath);
+
           const res: Record<string, unknown> = {};
           for (const file of ls) {
             if (file.endsWith('.json')) {
@@ -20,7 +25,7 @@ export default defineConfig({
             }
           }
 
-          return `const x = ${JSON.stringify(res)};export default x;`;
+          return `export default ${JSON.stringify(res)}`;
         },
       },
     }),

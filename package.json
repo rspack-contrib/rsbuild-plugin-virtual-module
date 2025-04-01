@@ -1,6 +1,6 @@
 {
   "name": "rsbuild-plugin-virtual-module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/rspack-contrib/rsbuild-plugin-virtual-module"
@@ -32,12 +32,12 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@playwright/test": "^1.50.1",
-    "@rsbuild/core": "^1.2.13",
-    "@rslib/core": "^0.5.2",
-    "@types/node": "^22.13.7",
-    "playwright": "^1.50.1",
-    "simple-git-hooks": "^2.11.1",
+    "@playwright/test": "^1.51.1",
+    "@rsbuild/core": "^1.3.1",
+    "@rslib/core": "^0.6.1",
+    "@types/node": "^22.13.16",
+    "playwright": "^1.51.1",
+    "simple-git-hooks": "^2.12.1",
     "typescript": "^5.8.2",
     "rsbuild-plugin-virtual-module": "workspace:*"
   },

@@ -2,8 +2,9 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { extname, join } from 'node:path';
 import type { RsbuildPlugin, TransformHandler } from '@rsbuild/core';
 
+type VirtualModules = Record<string, TransformHandler>;
 interface PluginVirtualModuleOptions {
-  virtualModules?: Record<string, TransformHandler>;
+  virtualModules?: VirtualModules;
 }
 
 const PLUGIN_VIRTUAL_MODULE_NAME = 'rsbuild:virtual-module';
@@ -17,9 +18,9 @@ const pluginVirtualModule = (
       process.cwd(),
       'node_modules/.rsbuild-virtual-module',
     );
-    const { virtualModules } = pluginOptions;
+    const { virtualModules = {} } = pluginOptions;
     const virtualFileAbsolutePaths: [string, string][] = Object.keys(
-      virtualModules ?? {},
+      virtualModules,
     ).map((i) => {
       let absolutePath = join(TEMP_DIR, i);
       if (!extname(absolutePath)) {
@@ -42,7 +43,7 @@ const pluginVirtualModule = (
     });
 
     for (const [moduleName, absolutePath] of virtualFileAbsolutePaths) {
-      const handler = virtualModules?.[moduleName];
+      const handler = virtualModules[moduleName];
       if (!handler) {
         continue;
       }
@@ -52,4 +53,4 @@ const pluginVirtualModule = (
 });
 
 export { pluginVirtualModule, PLUGIN_VIRTUAL_MODULE_NAME };
-export type { PluginVirtualModuleOptions };
+export type { PluginVirtualModuleOptions, VirtualModules };

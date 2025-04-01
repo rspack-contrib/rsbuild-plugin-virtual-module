@@ -22,27 +22,71 @@ Add plugin to your `rsbuild.config.ts`:
 
 ```ts
 // rsbuild.config.ts
-import { pluginVirtualModule } from "rsbuild-plugin-virtual-module";
+import { pluginVirtualModule } from 'rsbuild-plugin-virtual-module';
 
 export default {
-  plugins: [pluginVirtualModule()],
+  plugins: [
+    pluginVirtualModule({
+      virtualModules: {
+        'virtual-foo': async () => {
+          return 'export default {}';
+        },
+      },
+    }),
+  ],
 };
+```
+
+```ts
+import foo from 'virtual-foo';
+
+console.log(foo); // {}
 ```
 
 ## Options
 
-### foo
+### virtualModules
 
-Some description.
+Generate virtual modules, where the key is the name of the virtual module and the value is `TransformHandler`. See [Rsbuild - api.transform](https://rsbuild.dev/plugins/dev/core#apitransform)
 
-- Type: `string`
-- Default: `undefined`
+- Type:
+
+```ts
+import type { RsbuildPlugin, TransformHandler } from '@rsbuild/core';
+
+type VirtualModules = Record<string, TransformHandler>;
+```
+
+- Default: `{}`
 - Example:
 
 ```js
 pluginVirtualModule({
-  foo: "bar",
+  virtualModules: {
+    'virtual-json-list': async ({ addDependency, addContextDependency }) => {
+      const jsonFolderPath = join(__dirname, 'json');
+      const ls = await readdir(jsonFolderPath);
+      addContextDependency(jsonFolderPath);
+
+      const res: Record<string, unknown> = {};
+      for (const file of ls) {
+        if (file.endsWith('.json')) {
+          const jsonFilePath = join(jsonFolderPath, file);
+          const jsonContent = await readFile(jsonFilePath, 'utf-8');
+          addDependency(jsonFilePath);
+          res[file] = JSON.parse(jsonContent);
+        }
+      }
+
+      return `export default ${JSON.stringify(res)}`;
+    },
+  },
 });
+```
+
+```js
+import jsonList from 'virtual-json-list';
+console.log(jsonList);
 ```
 
 ## License
