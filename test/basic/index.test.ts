@@ -30,7 +30,7 @@ test('should render page as expected', async ({ page }) => {
   const { server, urls } = await rsbuild.startDevServer();
 
   await page.goto(urls[0]);
-  expect(JSON.stringify(await page.evaluate('window.test'))).toMatchSnapshot();
+  expect(await page.evaluate('window.test')).toEqual({});
 
   await server.close();
 });
@@ -67,7 +67,11 @@ test('should build succeed', async ({ page }) => {
   const { server, urls } = await rsbuild.preview();
 
   await page.goto(urls[0]);
-  expect(JSON.stringify(await page.evaluate('window.test'))).toMatchSnapshot();
+  expect(await page.evaluate('window.test')).toMatchObject({
+    '_meta.json': [{ name: 'test-dir', type: 'dir' }, 'c', 'd'],
+    'c.json': { c: '3' },
+    'd.json': { d: 4 },
+  });
 
   await server.close();
 });
