@@ -1,0 +1,1 @@
+{"_meta.json":[{"name":"test-dir","type":"dir"},"c","d"],"c.json":{"c":"3"},"d.json":{"d":4}}
