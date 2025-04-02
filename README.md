@@ -1,8 +1,8 @@
-# rsbuild-plugin-virtual-module
+# rsbuild-plugin-virtual-module🧙
 
-The simplest and most flexible way to build a bridge between runtime and compile time, compiling magic 🪄
+The simplest and most flexible way to build with a compiling magic 🪄
 
-An Rsbuild plugin that allows you to create virtual modules, the pro version of [rspack-plugin-virtual-module](https://github.com/rspack-contrib/rspack-plugin-virtual-module) with hmr.
+An Rsbuild plugin that allows you to create virtual modules, the pro version of [rspack-plugin-virtual-module](https://github.com/rspack-contrib/rspack-plugin-virtual-module) with loader API.
 
 <p>
   <a href="https://npmjs.com/package/rsbuild-plugin-virtual-module">
@@ -54,7 +54,7 @@ Generate virtual modules, where the key is the name of the virtual module and th
 - Type:
 
 ```ts
-import type { RsbuildPlugin, TransformHandler } from '@rsbuild/core';
+import type { TransformHandler } from '@rsbuild/core';
 
 type VirtualModules = Record<string, TransformHandler>;
 ```
