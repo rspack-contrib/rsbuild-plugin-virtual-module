@@ -1,6 +1,6 @@
 # rsbuild-plugin-virtual-module
 
-The simplest and most flexible way to build a bridge between runtime and compile time.
+The simplest and most flexible way to build a bridge between runtime and compile time, compiling magic 🪄
 
 An Rsbuild plugin that allows you to create virtual modules, the pro version of [rspack-plugin-virtual-module](https://github.com/rspack-contrib/rspack-plugin-virtual-module) with hmr.
 
