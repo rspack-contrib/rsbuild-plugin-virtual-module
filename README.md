@@ -91,6 +91,13 @@ import jsonList from 'virtual-json-list';
 console.log(jsonList);
 ```
 
+### tempDir
+
+The name of the virtual module folder under `node_modules`.
+
+- Type: `string`
+- Default: `.rsbuild-virtual-module`
+
 ## License
 
 [MIT](./LICENSE).
