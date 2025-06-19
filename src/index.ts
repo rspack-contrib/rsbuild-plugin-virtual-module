@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from 'node:fs/promises';
-import { extname, join } from 'node:path';
+import { dirname, extname, join } from 'node:path';
 import type { RsbuildPlugin, TransformHandler } from '@rsbuild/core';
 
 type VirtualModules = Record<string, TransformHandler>;
@@ -52,11 +52,12 @@ const pluginVirtualModule = (
 
     // 1. create TEMP_DIR under both rsbuild dev and build
     api.onBeforeCreateCompiler(async () => {
-      await mkdir(TEMP_DIR, { recursive: true });
       await Promise.all(
-        virtualFileAbsolutePaths.map(([_, absolutePath]) =>
-          writeFile(absolutePath, '', 'utf-8'),
-        ),
+        virtualFileAbsolutePaths.map(async ([_, absolutePath]) => {
+          const dir = dirname(absolutePath);
+          await mkdir(dir, { recursive: true });
+          return writeFile(absolutePath, '', 'utf-8');
+        }),
       );
     });
 
