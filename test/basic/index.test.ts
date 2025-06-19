@@ -18,6 +18,9 @@ test('should render page as expected', async ({ page }) => {
             'virtual-json-list': async () => {
               return 'export default {}';
             },
+            'nested/1/2/3/test.mjs': async () => {
+              return 'export default {}';
+            },
           },
         }),
       ],
@@ -57,6 +60,9 @@ test('should build succeed', async ({ page }) => {
 
               return `export default ${JSON.stringify(res)};`;
             },
+            'nested/1/2/3/test.mjs': async () => {
+              return `export default ${JSON.stringify({ a: 1, b: 2 })};`;
+            },
           },
         }),
       ],
@@ -71,6 +77,10 @@ test('should build succeed', async ({ page }) => {
     '_meta.json': [{ name: 'test-dir', type: 'dir' }, 'c', 'd'],
     'c.json': { c: '3' },
     'd.json': { d: 4 },
+  });
+  expect(await page.evaluate('window.nestedJson')).toMatchObject({
+    a: 1,
+    b: 2,
   });
 
   await server.close();
