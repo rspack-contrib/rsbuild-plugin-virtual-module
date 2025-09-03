@@ -1,8 +1,13 @@
-import './index.css';
+import virtualJsonList from 'virtual-json-list';
 
-document.querySelector('#root').innerHTML = `
-<div class="content">
-  <h1>Vanilla Rsbuild</h1>
-  <p>Start building amazing things with Rsbuild.</p>
-</div>
-`;
+window.test = virtualJsonList;
+
+const preElement =
+  document.getElementById('test') || document.createElement('pre');
+preElement.id = 'test';
+
+preElement.innerHTML = JSON.stringify(virtualJsonList, null, 2);
+
+document.body.appendChild(preElement);
+
+module.hot?.accept();
