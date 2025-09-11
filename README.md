@@ -93,10 +93,24 @@ console.log(jsonList);
 
 ### tempDir
 
-The name of the virtual module folder under `node_modules`.
+The name of the virtual module folder based on `api.context.rootPath`
 
 - Type: `string`
 - Default: `.rsbuild-virtual-module`
+- Example:
+
+```js
+pluginVirtualModule({
+  tempDir: 'src',
+  virtualModules: {
+    'virtual-foo': async () => {
+      return 'export default {}';
+    },
+  },
+});
+```
+
+The actual virtual module is `./src/virtual-foo.js`
 
 ## License
 
