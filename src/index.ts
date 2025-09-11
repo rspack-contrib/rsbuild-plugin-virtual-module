@@ -1,5 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
-import { dirname, extname, join } from 'node:path';
+import { extname, join } from 'node:path';
 import type { RsbuildPlugin, TransformHandler } from '@rsbuild/core';
 
 type VirtualModules = Record<string, TransformHandler>;
@@ -9,7 +8,7 @@ interface PluginVirtualModuleOptions {
    */
   virtualModules?: VirtualModules;
   /**
-   * The name of the virtual module folder under `node_modules`
+   * The name of the virtual module folder based on `api.context.rootPath`
    * @default '.rsbuild-virtual-module'
    */
   tempDir?: string;
@@ -26,11 +25,7 @@ const pluginVirtualModule = (
       virtualModules = {},
       tempDir: virtualFolderName = '.rsbuild-virtual-module',
     } = pluginOptions;
-    const TEMP_DIR = join(
-      api.context.rootPath,
-      'node_modules',
-      virtualFolderName,
-    );
+    const TEMP_DIR = join(api.context.rootPath, virtualFolderName);
 
     const virtualFileAbsolutePaths: [string, string][] = Object.keys(
       virtualModules,
@@ -42,27 +37,18 @@ const pluginVirtualModule = (
       return [i, absolutePath];
     });
 
-    // ensure the virtual module is transformed by swc to downgrade the syntax
-    api.modifyRsbuildConfig((config) => {
-      if (!config.source) {
-        config.source = {};
-      }
-      config.source.include = [...(config.source.include || []), TEMP_DIR];
-    });
-
-    // 1. create TEMP_DIR under both rsbuild dev and build
-    api.onBeforeCreateCompiler(async () => {
-      await Promise.all(
-        virtualFileAbsolutePaths.map(async ([_, absolutePath]) => {
-          const dir = dirname(absolutePath);
-          await mkdir(dir, { recursive: true });
-          return writeFile(absolutePath, '', 'utf-8');
-        }),
+    api.modifyBundlerChain((chain, { rspack }) => {
+      // 1. create empty files in memfs
+      chain.plugin('RSBUILD_VIRTUAL_MODULE_PLUGIN').use(
+        new rspack.experiments.VirtualModulesPlugin(
+          Object.fromEntries(
+            virtualFileAbsolutePaths.map((i) => {
+              return [i[1], ''];
+            }),
+          ),
+        ),
       );
-    });
-
-    // 2. add alias for virtual modules
-    api.modifyBundlerChain((chain) => {
+      // 2. add alias for virtual modules
       chain.resolve.alias.merge(Object.fromEntries(virtualFileAbsolutePaths));
     });
 
@@ -77,5 +63,5 @@ const pluginVirtualModule = (
   },
 });
 
-export { pluginVirtualModule, PLUGIN_VIRTUAL_MODULE_NAME };
+export { PLUGIN_VIRTUAL_MODULE_NAME, pluginVirtualModule };
 export type { PluginVirtualModuleOptions, VirtualModules };

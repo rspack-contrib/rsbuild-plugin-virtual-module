@@ -7,6 +7,9 @@ export default defineConfig({
   performance: {
     buildCache: true,
   },
+  dev: {
+    writeToDisk: true,
+  },
   plugins: [
     pluginVirtualModule({
       virtualModules: {
