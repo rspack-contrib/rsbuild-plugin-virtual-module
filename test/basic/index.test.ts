@@ -16,7 +16,7 @@ test.describe('pluginVirtualModule', () => {
     cJsonOriginalContent = await readFile(C_JSON_PATH, 'utf-8');
   });
 
-  test.afterAll(async () => {
+  test.afterEach(async () => {
     // restore c.json
     await writeFile(C_JSON_PATH, cJsonOriginalContent);
   });
@@ -84,26 +84,19 @@ test.describe('pluginVirtualModule', () => {
   });
 
   test('build - should build succeed', async ({ page }) => {
+    const originalJson = {
+      '_meta.json': [{ name: 'test-dir', type: 'dir' }, 'c', 'd'],
+      'c.json': { c: '3' },
+      'd.json': { d: 4 },
+    };
     const rsbuild = await createRsbuild({
       cwd: __dirname,
       rsbuildConfig: {
         plugins: [
           pluginVirtualModule({
             virtualModules: {
-              'virtual-json-list': async ({ addDependency }) => {
-                const jsonFolderPath = join(__dirname, 'json');
-                const ls = await readdir(jsonFolderPath);
-                const res: Record<string, unknown> = {};
-                for (const file of ls) {
-                  if (file.endsWith('.json')) {
-                    const jsonFilePath = join(jsonFolderPath, file);
-                    const jsonContent = await readFile(jsonFilePath, 'utf-8');
-                    addDependency(jsonFilePath);
-                    res[file] = JSON.parse(jsonContent);
-                  }
-                }
-
-                return `export default ${JSON.stringify(res)};`;
+              'virtual-json-list': async () => {
+                return `export default ${JSON.stringify(originalJson)};`;
               },
               'nested/1/2/3/test.mjs': async () => {
                 return `export default ${JSON.stringify({ a: 1, b: 2 })};`;
@@ -118,11 +111,7 @@ test.describe('pluginVirtualModule', () => {
     const { server, urls } = await rsbuild.preview();
 
     await page.goto(urls[0]);
-    expect(await page.evaluate('window.test')).toMatchObject({
-      '_meta.json': [{ name: 'test-dir', type: 'dir' }, 'c', 'd'],
-      'c.json': { c: '3' },
-      'd.json': { d: 4 },
-    });
+    expect(await page.evaluate('window.test')).toMatchObject(originalJson);
     expect(await page.evaluate('window.nestedJson')).toMatchObject({
       a: 1,
       b: 2,
