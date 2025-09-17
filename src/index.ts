@@ -39,15 +39,36 @@ const pluginVirtualModule = (
 
     api.modifyBundlerChain((chain, { rspack }) => {
       // 1. create empty files in memfs
-      chain.plugin('RSBUILD_VIRTUAL_MODULE_PLUGIN').use(
-        new rspack.experiments.VirtualModulesPlugin(
+      const pluginId = 'RSBUILD_VIRTUAL_MODULE_PLUGIN';
+      if (chain.plugins.has(pluginId)) {
+        // allow multiple rsbuild pluginVirtualModule
+        chain.plugin(pluginId).tap((options) => {
+          // keys should not be conflicted, otherwise panic
+          const existingPaths = new Set(Object.keys(options[0]));
+          const conflictPath = virtualFileAbsolutePaths.find(([, path]) =>
+            existingPaths.has(path),
+          );
+          if (conflictPath) {
+            throw new Error(
+              `Virtual module name conflicted: ${conflictPath[0]}`,
+            );
+          }
+
+          options[0] = {
+            ...options[0],
+            ...Object.fromEntries(virtualFileAbsolutePaths),
+          };
+          return options;
+        });
+      } else {
+        chain.plugin(pluginId).use(rspack.experiments.VirtualModulesPlugin, [
           Object.fromEntries(
             virtualFileAbsolutePaths.map((i) => {
               return [i[1], ''];
             }),
           ),
-        ),
-      );
+        ]);
+      }
       // 2. add alias for virtual modules
       chain.resolve.alias.merge(Object.fromEntries(virtualFileAbsolutePaths));
     });

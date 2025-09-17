@@ -119,4 +119,45 @@ test.describe('pluginVirtualModule', () => {
 
     await server.close();
   });
+
+  test('build - should allow multiple plugins', async ({ page }) => {
+    const originalJson = {
+      '_meta.json': [{ name: 'test-dir', type: 'dir' }, 'c', 'd'],
+      'c.json': { c: '3' },
+      'd.json': { d: 4 },
+    };
+    const rsbuild = await createRsbuild({
+      cwd: __dirname,
+      rsbuildConfig: {
+        plugins: [
+          pluginVirtualModule({
+            virtualModules: {
+              'virtual-json-list': async () => {
+                return `export default ${JSON.stringify(originalJson)};`;
+              },
+            },
+          }),
+          pluginVirtualModule({
+            virtualModules: {
+              'nested/1/2/3/test.mjs': async () => {
+                return `export default ${JSON.stringify({ a: 1, b: 2 })};`;
+              },
+            },
+          }),
+        ],
+      },
+    });
+
+    await rsbuild.build();
+    const { server, urls } = await rsbuild.preview();
+
+    await page.goto(urls[0]);
+    expect(await page.evaluate('window.test')).toMatchObject(originalJson);
+    expect(await page.evaluate('window.nestedJson')).toMatchObject({
+      a: 1,
+      b: 2,
+    });
+
+    await server.close();
+  });
 });
