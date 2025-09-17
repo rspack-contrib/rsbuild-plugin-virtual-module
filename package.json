@@ -17,7 +17,9 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "rslib build",
     "dev": "rslib build --watch",
@@ -31,14 +33,14 @@
     "pre-commit": "npm run lint:write"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "@playwright/test": "^1.51.1",
-    "@rsbuild/core": "^1.5.3",
-    "@rslib/core": "^0.6.1",
-    "@types/node": "^22.13.16",
-    "playwright": "^1.51.1",
-    "simple-git-hooks": "^2.12.1",
-    "typescript": "^5.8.2",
+    "@biomejs/biome": "^2.2.4",
+    "@playwright/test": "^1.55.0",
+    "@rsbuild/core": "^1.5.7",
+    "@rslib/core": "^0.13.3",
+    "@types/node": "^24.5.1",
+    "playwright": "^1.55.0",
+    "simple-git-hooks": "^2.13.1",
+    "typescript": "^5.9.2",
     "rsbuild-plugin-virtual-module": "workspace:*"
   },
   "peerDependencies": {
@@ -49,7 +51,7 @@
       "optional": true
     }
   },
-  "packageManager": "pnpm@10.5.2",
+  "packageManager": "pnpm@10.16.1",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
