@@ -1,4 +1,4 @@
-import virtualJsonList from 'virtual-json-list';
+import virtualJsonList from './virtual-json-list';
 
 window.test = virtualJsonList;
 

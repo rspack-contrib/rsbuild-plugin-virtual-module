@@ -4,36 +4,42 @@ import { defineConfig } from '@rsbuild/core';
 import { pluginVirtualModule } from 'rsbuild-plugin-virtual-module';
 
 export default defineConfig({
-  performance: {
-    buildCache: true,
-  },
   dev: {
     writeToDisk: true,
   },
+  tools: {
+    bundlerChain(chain, { rspack }) {
+      chain
+        .plugin('rsbuild-plugin-virtual-module')
+        .use(rspack.experiments.VirtualModulesPlugin, [
+          {
+            './src/virtual-json-list.js': '11;',
+          },
+        ]);
+    },
+  },
   plugins: [
-    pluginVirtualModule({
-      virtualModules: {
-        'virtual-json-list': async ({
-          addDependency,
-          addContextDependency,
-        }) => {
-          const jsonFolderPath = join(__dirname, 'json');
-          const ls = await readdir(jsonFolderPath);
-          addContextDependency(jsonFolderPath);
-
-          const res: Record<string, unknown> = {};
-          for (const file of ls) {
-            if (file.endsWith('.json')) {
-              const jsonFilePath = join(jsonFolderPath, file);
-              const jsonContent = await readFile(jsonFilePath, 'utf-8');
-              addDependency(jsonFilePath);
-              res[file] = JSON.parse(jsonContent);
-            }
-          }
-
-          return `export default ${JSON.stringify(res)}`;
-        },
-      },
-    }),
+    // pluginVirtualModule({
+    //   virtualModules: {
+    //     'virtual-json-list': async ({
+    //       addDependency,
+    //       addContextDependency,
+    //     }) => {
+    //       const jsonFolderPath = join(__dirname, 'json');
+    //       const ls = await readdir(jsonFolderPath);
+    //       addContextDependency(jsonFolderPath);
+    //       const res: Record<string, unknown> = {};
+    //       for (const file of ls) {
+    //         if (file.endsWith('.json')) {
+    //           const jsonFilePath = join(jsonFolderPath, file);
+    //           const jsonContent = await readFile(jsonFilePath, 'utf-8');
+    //           addDependency(jsonFilePath);
+    //           res[file] = JSON.parse(jsonContent);
+    //         }
+    //       }
+    //       return `export default ${JSON.stringify(res)}`;
+    //     },
+    //   },
+    // }),
   ],
 });
